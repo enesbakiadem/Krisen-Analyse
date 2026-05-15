@@ -121,14 +121,30 @@ print("\nLag analysis:")
 lag_rows = []
 
 for lag in range(-2, 4):
-    shifted_energy = combined["Energy"].shift(lag)
+    # Interpretation:
+    # lag +1 = Unemployment(t) vs Energy(t+1)
+    # lag -1 = Unemployment(t) vs Energy(t-1)
+    shifted_energy = combined["Energy"].shift(-lag)
+
     res = corr_with_ci(combined["Unemployment"], shifted_energy)
     res["Lag"] = lag
-    res["Description"] = f"Unemployment(t) vs Energy(t{lag:+d})"
+
+    if lag > 0:
+        res["Description"] = f"Unemployment(t) vs Energy(t+{lag}) — music follows"
+    elif lag < 0:
+        res["Description"] = f"Unemployment(t) vs Energy(t{lag}) — music leads"
+    else:
+        res["Description"] = "Unemployment(t) vs Energy(t) — same year"
+
     lag_rows.append(res)
 
 lag_df = pd.DataFrame(lag_rows)
-print(lag_df[["Lag", "n", "pearson_r", "pearson_p", "spearman_rho", "spearman_p"]].to_string(index=False))
+
+print(
+    lag_df[
+        ["Lag", "n", "pearson_r", "pearson_p", "spearman_rho", "spearman_p", "Description"]
+    ].to_string(index=False)
+)
 
 # ── Robustness check ─────────────────────────────────────────
 print("\nRobustness check:")
