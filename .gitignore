@@ -11,5 +11,6 @@ data/processed/bi/*
 !data/processed/bi/correlation_clean.csv
 !data/processed/bi/correlation_matrix.csv
 !data/processed/bi/lag_analysis.csv
-!data/processed/bi/songs_comparison.csv
 !data/processed/bi/music_economy_final.csv
+!data/processed/bi/mellow_songs.csv
+!data/processed/bi/active_songs.csv
