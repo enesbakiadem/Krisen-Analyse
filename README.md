@@ -36,8 +36,14 @@ This project explores whether this phenomenon can be observed statistically usin
 
 ## 📊 Data Sources
 
-- Billboard Hot 100 (1946–2022) with Spotify audio features  
-- World Bank data (USA): unemployment, GDP, inflation  
+Detailed source documentation is available in:
+
+`DATA_SOURCES.md`
+
+Main datasets:
+
+- Billboard Hot 100 + Spotify audio features
+- World Bank macroeconomic indicators
 
 ### Audio Features
 
@@ -45,9 +51,8 @@ This project explores whether this phenomenon can be observed statistically usin
 - **Energy** – intensity and activity level  
 - **Danceability** – how suitable a song is for dancing  
 
-> Note: Spotify audio features are based on proprietary algorithms.  
-> For a discussion of their validity, see:  
-> Vidas et al. (2025): https://www.researchgate.net/publication/395985412_Validating_Spotify's_'Valence'_'Energy'_and_'Danceability'_Audio_Features_for_Music_Psychology_Research
+> Spotify audio features are proprietary algorithmic estimates and should be interpreted cautiously.  
+> A related validity reference is documented in `DATA_SOURCES.md`.
 
 ## ⚙️ Methodology
 

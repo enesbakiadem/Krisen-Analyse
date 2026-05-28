@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+
+data/raw/
+data/processed/*
+!data/processed/bi/
+data/processed/bi/*
+!data/processed/bi/correlation_clean.csv
+!data/processed/bi/correlation_matrix.csv
+!data/processed/bi/lag_analysis.csv
+!data/processed/bi/songs_comparison.csv
+!data/processed/bi/music_economy_final.csv
