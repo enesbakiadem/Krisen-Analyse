@@ -127,10 +127,22 @@ def run_lag_analysis(combined: pd.DataFrame) -> pd.DataFrame:
 
     lag_rows = []
 
-    for lag in range(-2, 4):
-        shifted_energy = combined["Energy"].shift(-lag)
+    base = combined[["year", "Unemployment"]].copy()
 
-        res = corr_with_ci(combined["Unemployment"], shifted_energy)
+    for lag in range(-2, 4):
+        energy_shifted = combined[["year", "Energy"]].copy()
+
+        # Lag +1 means:
+        # Unemployment in year t is compared with Energy in year t+1
+        energy_shifted["year"] = energy_shifted["year"] + lag
+
+        temp = base.merge(
+            energy_shifted,
+            on="year",
+            how="inner",
+        )
+
+        res = corr_with_ci(temp["Unemployment"], temp["Energy"])
         res["Lag"] = lag
 
         if lag > 0:
@@ -189,38 +201,87 @@ def print_robustness_checks(
         print(f"{start} ({label}): N={res['n']}, r={res['pearson_r']:.3f}, p={res['pearson_p']:.4f}")
 
 
+def shorten_text(value: str, max_length: int = 45) -> str:
+    value = str(value)
+
+    if len(value) <= max_length:
+        return value
+
+    return value[: max_length - 3] + "..."
+
+
 def export_crisis_song_comparison(billboard: pd.DataFrame) -> None:
-    results = []
+    exclude_patterns = [
+        "Acoustic",
+        "Karaoke",
+        "Originally Performed",
+        "Instrumental",
+        "Tribute",
+        "Cover",
+        "Future Hit Makers",
+        "Made Famous by",
+    ]
+
+    clean = billboard.copy()
+    clean["Energy"] = pd.to_numeric(clean["Energy"], errors="coerce")
+    clean = clean.dropna(subset=["Energy", "Song", "Artist Names"])
+
+    pattern = "|".join(exclude_patterns)
+
+    clean = clean[
+        ~clean["Song"].str.contains(pattern, case=False, na=False)
+        & ~clean["Artist Names"].str.contains(pattern, case=False, na=False)
+    ].copy()
+
+    active_results = []
+    mellow_results = []
 
     for crisis, years in CRISIS_YEARS.items():
-        data = billboard[billboard["year"].isin(years)].copy()
+        data = clean[clean["year"].isin(years)].copy()
 
-        top_energy = (
-            data.nlargest(20, "Energy")[["year", "Song", "Artist Names", "Energy"]]
+        active = (
+            data.sort_values("Energy", ascending=False)
             .drop_duplicates(subset=["Song", "Artist Names"])
-            .head(10)
+            .head(10)[["year", "Song", "Artist Names", "Energy"]]
             .copy()
         )
-        top_energy["Crisis"] = crisis
-        top_energy["Type"] = "Energetic"
+        active["Crisis"] = crisis
+        active["Type"] = "Active"
 
-        top_mellow = (
-            data.nsmallest(20, "Energy")[["year", "Song", "Artist Names", "Energy"]]
+        mellow = (
+            data.sort_values("Energy", ascending=True)
             .drop_duplicates(subset=["Song", "Artist Names"])
-            .head(10)
+            .head(10)[["year", "Song", "Artist Names", "Energy"]]
             .copy()
         )
-        top_mellow["Crisis"] = crisis
-        top_mellow["Type"] = "Low Energy"
+        mellow["Crisis"] = crisis
+        mellow["Type"] = "Mellow"
 
-        results.append(top_energy)
-        results.append(top_mellow)
+        active_results.append(active)
+        mellow_results.append(mellow)
 
-    pd.concat(results).to_csv(
-        BI / "songs_comparison.csv",
+    active_out = pd.concat(active_results).copy()
+    mellow_out = pd.concat(mellow_results).copy()
+
+    for df in [active_out, mellow_out]:
+        df["Song_short"] = df["Song"].apply(shorten_text)
+        df["Artist_short"] = df["Artist Names"].apply(shorten_text)
+        df["Energy"] = df["Energy"].round(2)
+
+    active_out.to_csv(
+        BI / "active_songs.csv",
         index=False,
         decimal=",",
         sep=";",
+        encoding="utf-8-sig",
+    )
+
+    mellow_out.to_csv(
+        BI / "mellow_songs.csv",
+        index=False,
+        decimal=",",
+        sep=";",
+        encoding="utf-8-sig",
     )
 
 
