@@ -1,4 +1,4 @@
-# Recession Pop: Music in Times of Economic Crisis
+# Recession Pop
 
 ## Project Snapshot
 
@@ -8,31 +8,45 @@
 - **Focus:** music audio features · unemployment · economic crises  
 - **Output:** correlation analysis, lag analysis, interactive Power BI dashboard
 
-Do economic crises change the sound of popular music?
+## 🔑 Key Takeaway
 
-> A data analysis project combining music data with macroeconomic indicators to explore how culture reacts to economic pressure.
+The data supports part of the “Recession Pop” idea.
 
-I first came across the idea of “Recession Pop”, the claim that music became more energetic during the financial crisis. 
+From 2000 to 2022, higher US unemployment was associated with higher song energy and lower danceability in Billboard Hot 100 songs. The strongest energy relationship appears with a one-year delay.
 
-This made me question whether the relationship between economic conditions and music actually holds in a measurable way, and led to this analysis.
+COVID-19 breaks the pattern, suggesting that pandemic-era music consumption may have worked differently from earlier economic crises.
 
-## 📸 Key Visuals
+## 🧭 Overview
 
-### Energy vs Unemployment, including the COVID anomaly
+“Recession Pop” describes the idea that popular music becomes more energetic during economic downturns.
+
+This project tests that claim using Billboard Hot 100 data, Spotify audio features, and US macroeconomic indicators.
+
+The analysis focuses on whether unemployment is linked to changes in energy, danceability, and valence, and whether the relationship appears immediately or with a delay.
+
+## 📸 Dashboard Preview
+
 ![Energy vs Unemployment](./visuals/01_energy_vs_unemployment.png)
 
-### Lag Analysis
+![Correlation with Unemployment](./visuals/02_correlation_with_unemployment.png)
+
 ![Lag Analysis](./visuals/03_lag_analysis.png)
+
+![Top Energetic Songs](./visuals/04_energy_top_songs.png)
+
+![Lowest Energy Songs](./visuals/05_energy_low_songs.png)
 
 ## 🎯 Research Question
 
 Do economic conditions in the United States influence musical characteristics, and if so, how?
 
-## 🧠 Background
+## 🧠 Analytical Framing
 
-“Recession Pop” describes a wave of energetic, dance-oriented music that emerged during the late 2000s financial crisis.
+The project does not assume that economic crises directly cause musical change.
 
-This project explores whether this phenomenon can be observed statistically using Billboard Hot 100 data and Spotify audio features, and whether a similar pattern appeared during COVID-19.
+Instead, it tests whether macroeconomic pressure and popular music features move together over time.
+
+The analysis is exploratory: it looks for measurable patterns, delayed relationships, and exceptions such as COVID-19.
 
 ## 📊 Data Sources
 
@@ -66,78 +80,50 @@ Main datasets:
 
 ## 📈 Key Results
 
-The analysis reveals a consistent pattern:
+The analysis shows a clear pattern between unemployment and selected audio features.
 
-During economic downturns, music becomes more energetic while losing danceability.
+| Feature | r | p-value | Interpretation |
+|---|---:|---:|---|
+| Energy | +0.57 | 0.0047 | Rises with unemployment |
+| Danceability | -0.69 | 0.0004 | Falls with unemployment |
+| Valence | +0.05 | 0.7899 | No meaningful relationship |
 
-At the same time, the data indicates that music does not lead economic changes, it follows them.
+**Lag analysis**  
+The strongest energy correlation appears with a one-year delay (r = 0.63), suggesting that music follows economic pressure rather than reacting immediately.
 
-| Feature       | r     | p-value | Interpretation              |
-|---------------|-------|---------|-----------------------------|
-| Energy        | +0.57 | 0.0047  | Rises with unemployment     |
-| Danceability  | -0.68 | 0.0004  | Falls with unemployment     |
-| Valence       | +0.06 | 0.79    | No meaningful relationship  |
+**Robustness check**  
+Spearman correlation gives a similar result (ρ = 0.53), reducing the risk that the finding is driven only by outliers or strict linear assumptions.
 
-**Lag Analysis (Energy)**  
-The strongest correlation appears one year after the economic shock *(r = 0.63, lag +1)*, suggesting that music reacts to economic conditions with a short delay rather than immediately.
-
-**Robustness**  
-To check whether this result is stable, I also used Spearman correlation.
-
-The result remains similar (ρ = 0.53), which suggests that the relationship is not driven by outliers or strict linear assumptions.
-
-### COVID-19
-
-No clear “Recession Pop” effect was observed during COVID-19, suggesting that structural changes in music consumption may have altered the relationship.
-
-Possible explanations:
-- Increased digital media consumption  
-- Social isolation reducing collective escapism  
-- A shift toward more introspective or “negative escapism”, where listeners turn to slower or emotionally heavier music instead of energetic, dance-oriented tracks
+**COVID-19 exception**  
+No clear “Recession Pop” effect appears during COVID-19. This may reflect changes in listening behavior, social isolation, or a shift toward more introspective music.
 
 ## 🔬 Statistical Note
 
-The sample consists of 23 yearly observations (2000–2022).  
-Given the relatively small sample size, the analysis should be interpreted as exploratory rather than conclusive.
+The analysis uses 23 yearly observations from 2000 to 2022, so the results should be interpreted as exploratory rather than conclusive.
 
-The starting point (year 2000) was chosen pragmatically to focus on recent developments and ensure consistent data availability.  
-To assess whether this choice influenced the results, the analysis was repeated starting from 1991 (earliest available macroeconomic data).  
-The overall pattern remains similar, suggesting that the findings are not driven by the selected time window.
+Pearson correlation is used for linear association, while Spearman correlation is used as a robustness check.
 
-To reduce the risk of confirmation bias, multiple features (Energy, Danceability, Valence) were analyzed.  
-Since not all variables show the same relationship, the results are less likely to reflect a single predefined narrative.
+The analysis was also repeated from 1991, the earliest available macroeconomic year. The overall pattern remained similar.
 
-Spotify audio features are based on proprietary algorithms and should be interpreted with caution.  
-External research suggests that “Energy” correlates relatively well with perceived intensity, while “Danceability” appears less consistent.  
-For this reason, the interpretation focuses primarily on Energy, while Danceability is treated more cautiously.
-
-Pearson correlation is used as a measure of linear association, while Spearman correlation serves as a robustness check.  
-The similarity between both measures suggests that the results are not driven by outliers or strict linear assumptions.
+Spotify audio features are proprietary algorithmic estimates. Energy is interpreted with more confidence than danceability, based on the validity discussion documented in `DATA_SOURCES.md`.
 
 ## ⚠️ Limitations
 
-- Billboard reflects chart success, not actual listening behavior  
-- Spotify audio features for older songs are retroactively calculated  
-- Limited sample size (23 data points)  
-- Correlation does not imply causation  
+- Billboard reflects chart success, not actual listening behavior
+- Spotify audio features are proprietary algorithmic estimates
+- Audio features for older songs may be retroactively calculated
+- The sample size is limited to yearly observations
+- Correlation does not imply causation 
 
 ## 🧹 Data Cleaning
 
-- 172 karaoke entries removed (incorrect audio features)  
-- Artist name formatting standardized  
+- 172 karaoke entries removed due to incorrect audio features  
+- Artist name formatting standardized
 
 ## 🛠️ Tools
 
 - Python (Pandas, SciPy)  
 - Power BI  
-
-## 💡 Key Insight
-
-Music does not exist in isolation.
-
-The results suggest that economic pressure shapes music, but not immediately.
-
-Instead, cultural responses seem to build up over time, reflecting shared experiences.
 
 ## 🤖 Use of AI (Transparency)
 
